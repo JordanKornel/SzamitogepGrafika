@@ -11,12 +11,16 @@ typedef struct Scene
     Model Maze;
 	Model Cube;
 	Model Star;
+	Model ground;
     Material material;
+	GLuint ground_texture;
 	GLuint Maze_texture;
 	GLuint Cube_texture;
 	GLuint Star_texture;
 	GLuint skybox_texture;
+	GLuint Help_menu;
 	double angle;
+	bool Help_visible;
 } Scene;
 
 /**
@@ -62,7 +66,11 @@ void load_Maze(Scene scene);
  * Load the star.
  */
 void load_Star(Scene scene);
+/**
+ * Load the star.
+ */
+void load_ground(Scene scene);
 
-
+void Help(GLuint Help_menu);
 
 #endif /* SCENE_H */

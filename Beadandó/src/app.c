@@ -4,6 +4,14 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <string.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+
+GLfloat mat_emission[] = {-1.0f,-1.0f,-1.0f,1.0f};
+GLfloat sky_emission[] = {0.3f,0.0f,0.0f,1.0f};
+GLfloat ground_emission[] = {-0.7f,-0.7f,-0.7f,1.0f};
+
+
 void init_app(App* app, int width, int height)
 {
     int error_code;
@@ -95,7 +103,7 @@ void reshape(GLsizei width, GLsizei height)
     glFrustum(
         -.08, .08,
         -.06, .06,
-        .1, 10
+        .1, 5000
     );
 }
 
@@ -107,7 +115,10 @@ void handle_app_events(App* app)
     static int mouse_y = 0;
     int x;
     int y;
-
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,mat_emission);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,ground_emission);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,sky_emission);
+	
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
         case SDL_KEYDOWN:
@@ -132,7 +143,40 @@ void handle_app_events(App* app)
 				glDisable(GL_FOG);
 				}
 				else{
-					glEnable(GL_FOG);
+				glEnable(GL_FOG);
+				}
+				break;
+			case SDL_SCANCODE_F1:
+                if(!app->scene.Help_visible) {
+                app->scene.Help_visible = true;
+                }else{
+                app->scene.Help_visible = false;
+                }
+                break;
+			case SDL_SCANCODE_J:
+                if(mat_emission[0] < 1.0){
+				mat_emission[0] += 0.01;
+				mat_emission[1] += 0.01;
+				mat_emission[2] += 0.01;
+				sky_emission[0] += 0.01;
+				sky_emission[1] += 0.01;
+				sky_emission[2] += 0.01;
+				ground_emission[0] += 0.01;
+				ground_emission[1] += 0.01;
+				ground_emission[2] += 0.01;
+				}
+                break;
+			case SDL_SCANCODE_K:
+                if(mat_emission[0] > -1.0){
+				mat_emission[0] -= 0.01;
+				mat_emission[1] -= 0.01;
+				mat_emission[2] -= 0.01;
+				sky_emission[0] -= 0.01;
+				sky_emission[1] -= 0.01;
+				sky_emission[2] -= 0.01;
+				ground_emission[0] -= 0.01;
+				ground_emission[1] -= 0.01;
+				ground_emission[2] -= 0.01;
 				}
                 break;
 			case SDL_SCANCODE_H:
@@ -210,10 +254,9 @@ void render_app(App* app)
     render_scene(&(app->scene));
     glPopMatrix();
 
-    if (app->camera.is_preview_visible) {
-        show_texture_preview();
-    }
-
+    if (app->scene.Help_visible){
+        Help(app->scene.Help_menu);
+	}
     SDL_GL_SwapWindow(app->window);
 }
 

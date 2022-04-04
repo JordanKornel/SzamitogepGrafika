@@ -61,4 +61,9 @@ void destroy_app(App* app);
  */
 int takeScreenshot(int counter);
 
+/**
+ * Move the camera up.
+ */
+void move_camera_up(struct Camera* camera, double distance);
+
 #endif /* APP_H */
