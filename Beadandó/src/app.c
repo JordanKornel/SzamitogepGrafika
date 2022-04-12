@@ -151,6 +151,11 @@ void handle_app_events(App* app)
                 app->scene.Help_visible = true;
                 }else{
                 app->scene.Help_visible = false;
+				glFrustum(
+				-.08, .08,
+				-.06, .06,
+				.1, 5000
+				);
                 }
                 break;
 			case SDL_SCANCODE_J:

@@ -165,36 +165,39 @@ void load_ground(Scene scene) {
 }
 
 void Help(GLuint Help_menu) {
-
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_COLOR_MATERIAL);
-
+	glPushMatrix();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    glPushMatrix();
 
-    glColor3f(1, 1, 1);
     glBindTexture(GL_TEXTURE_2D, Help_menu);
 
     glBegin(GL_QUADS);
+
     glTexCoord2f(0.0,0.0);
     glVertex3d(-7.0,7.0,0.0);
+
 
     glTexCoord2f(0.0, 1.0);
     glVertex3d(-7.0,-7.0,0.0);
 
+
     glTexCoord2f(1.0, 1.0);
     glVertex3d(7.0,-7.0,0.0);
+
 
     glTexCoord2f(1.0,0.0);
     glVertex3d(7.0,7.0,0.0);
     glEnd();
 
-
-    glDisable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-
+    glPopMatrix();
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-9.0, 9.0, -9.0, 9.0, 0.0, 30.0);
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	
 }
 
 void update_scene(Scene* scene, double time)
