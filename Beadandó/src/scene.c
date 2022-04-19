@@ -1,5 +1,5 @@
 #include "scene.h"
-
+#include <time.h>
 #include <obj/load.h>
 #include <obj/draw.h>
 #include <math.h>
@@ -148,7 +148,23 @@ void load_Star(Scene scene) {
     glTranslated(2.25, 0, 0.5);
     glBindTexture(GL_TEXTURE_2D, scene.Star_texture);
 	glTranslated(0, 0, 0.2);
-	glRotatef(scene.angle,0,0,1);
+	double time_taken;
+	clock_t start;
+	start = clock();
+	time_taken = ((double) (start)) / CLOCKS_PER_SEC;
+	int ok=0;
+	//printf("%lf,%lf \n",time_taken,fmod(time_taken, 10.0));
+	if(fmod(time_taken, 14.4) < 0.0){
+		ok = 0;
+	}else if(fmod(time_taken, 14.4) > 7.2){
+		ok = 1;
+	}
+	if(ok==0){
+		glRotatef(scene.angle,0,0,1);
+	}else{
+		glRotatef(-scene.angle,0,0,1);
+	}
+	
     draw_model(&(scene.Star));
 	
 
