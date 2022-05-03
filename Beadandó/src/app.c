@@ -1,11 +1,11 @@
 #include "app.h"
-
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <string.h>
 #include <GL/glu.h>
 #include <GL/gl.h>
+#include <SDL2/SDL_mixer.h>
 
 GLfloat mat_emission[] = {-1.0f,-1.0f,-1.0f,1.0f};
 GLfloat sky_emission[] = {0.3f,0.0f,0.0f,1.0f};
@@ -41,6 +41,11 @@ void init_app(App* app, int width, int height)
         return;
     }
 
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("[ERROR] Mixer initialization error: %s\n", Mix_GetError());
+        return;
+    }
+
     app->gl_context = SDL_GL_CreateContext(app->window);
     if (app->gl_context == NULL) {
         printf("[ERROR] Unable to create the OpenGL context!\n");
@@ -51,7 +56,7 @@ void init_app(App* app, int width, int height)
     reshape(width, height);
 
     init_camera(&(app->camera));
-    init_scene(&(app->scene));
+    init_scene(&(app->scene), &(app->audio));
 
     app->is_running = true;
 }
@@ -183,6 +188,14 @@ void handle_app_events(App* app)
 				ground_emission[1] -= 0.01;
 				ground_emission[2] -= 0.01;
 				}
+                break;
+            case SDL_SCANCODE_M:
+                    if (Mix_PlayingMusic() == 0) {
+                        Mix_PlayMusic((app->audio.Music), -1);
+                    } else {
+                        Mix_HaltMusic();
+                        Mix_PlayMusic((app->audio.Music), -1);
+                    }
                 break;
 			case SDL_SCANCODE_H:
                 printf("Camera X: %f\n", app->camera.position.x);

@@ -9,7 +9,7 @@ int jumped = 0;
 int Collided(float x, float y)
 {
 	//külső falak
-    if(x>4.4 || y<-0.91 || y>12.34 || x<-6.21){
+    if(x>4.4 || y<-0.91 || y>12.34 || (x<-6.21 && y>-1 && y<3.5) || (x<-6.21 && y>5.3 && y<12.2)){
         return 1;
     }
 	//vízszintes falak

@@ -19,6 +19,7 @@ typedef struct App
     double uptime;
     Camera camera;
     Scene scene;
+    Audio audio;
 } App;
 
 /**

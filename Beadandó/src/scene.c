@@ -3,10 +3,14 @@
 #include <obj/load.h>
 #include <obj/draw.h>
 #include <math.h>
+#include <stdlib.h> 
+#include <stdio.h>
 
-void init_scene(Scene* scene)
+void init_scene(Scene* scene, Audio *audio)
 {
-    load_model(&(scene->Maze), "assets/models/Mazegood.obj");
+    load_scene_sounds(audio);
+
+    load_model(&(scene->Maze), "assets/models/Maze4.obj");
     scene->Maze_texture = load_texture("assets/textures/tegla.png");
     glBindTexture(GL_TEXTURE_2D, scene->Maze_texture);
 	
@@ -24,10 +28,19 @@ void init_scene(Scene* scene)
 	scene->skybox_texture = load_texture("assets/textures/egbolt.jpg");
     glBindTexture(GL_TEXTURE_2D, scene->skybox_texture);
 	
-	scene->Help_menu = load_texture("assets/textures/Help_menu.png");
+	scene->Help_menu = load_texture("assets/textures/Help_menu.jpg");
 	glBindTexture(GL_TEXTURE_2D, scene->Help_menu);
+
+    scene->lava_texture = load_texture("assets/textures/lava.jpg");
+	glBindTexture(GL_TEXTURE_2D, scene->lava_texture);
 	
-	
+    load_model(&(scene->Lava), "assets/models/lap.obj");
+
+    load_model(&(scene->Ball), "assets/models/ball2.obj");
+    load_model(&(scene->placs1), "assets/models/placs1.obj");
+    load_model(&(scene->placs2), "assets/models/placs2.obj");
+
+	scene->motion_up = true;
 	
     scene->material.ambient.red = 1.0f;
     scene->material.ambient.green = 1.0f;
@@ -44,6 +57,14 @@ void init_scene(Scene* scene)
 	
 	scene->angle = 0;
 	scene->Help_visible = false;
+
+}
+
+void load_scene_sounds(Audio *audio) {
+    audio->Music = Mix_LoadMUS("assets/audio/music.mp3");
+    if (audio->Music == NULL) {
+        printf("Failed to load music! SDL_mixer Error: %s\n", Mix_GetError());
+    }
 }
 
 void set_lighting()
@@ -180,41 +201,98 @@ void load_ground(Scene scene) {
     glPopMatrix();
 }
 
-void Help(GLuint Help_menu) {
-	glPushMatrix();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+
+void load_lava(Scene scene){
+    glPushMatrix();
+    glTranslatef(0,0,-1.3);
+    glBindTexture(GL_TEXTURE_2D, scene.lava_texture);
+    glTranslatef(0,0,-1.3);
+    draw_model(&(scene.Lava));
+    glPopMatrix();
+    glDisable(GL_BLEND);
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_TEXTURE_2D);
+}
+
+void load_ground2(Scene scene){
+    glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glEnable(GL_COLOR_MATERIAL);
+    glDisable(GL_TEXTURE_2D);
+
     glPushMatrix();
 
-    glBindTexture(GL_TEXTURE_2D, Help_menu);
+    
 
     glBegin(GL_QUADS);
+    
+    glColor4f(0.0, 0.0, 0.0, 10.0);
+    glNormal3f(1.0, 1.0, 1.0);
 
-    glTexCoord2f(0.0,0.0);
-    glVertex3d(-7.0,7.0,0.0);
+    glVertex3f(5.0, -2.0, 0.0);
+    glVertex3f(5.0, 16.0, 0.0);
+    glVertex3f(-10.0, 16.0, 0.0);
+    glVertex3f(-10.0, -2.0, 0.0);
 
-
-    glTexCoord2f(0.0, 1.0);
-    glVertex3d(-7.0,-7.0,0.0);
-
-
-    glTexCoord2f(1.0, 1.0);
-    glVertex3d(7.0,-7.0,0.0);
-
-
-    glTexCoord2f(1.0,0.0);
-    glVertex3d(7.0,7.0,0.0);
     glEnd();
 
     glPopMatrix();
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-9.0, 9.0, -9.0, 9.0, 0.0, 30.0);
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	
+
+    glDisable(GL_BLEND);
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_TEXTURE_2D);
 }
+
+void Help(GLuint Help_menu) {
+        glDisable(GL_CULL_FACE);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_COLOR_MATERIAL);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, Help_menu);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0);
+    glVertex3d(-2, 1.5, -3);
+    glTexCoord2f(1, 0);
+    glVertex3d(2, 1.5, -3);
+    glTexCoord2f(1, 1);
+    glVertex3d(2, -1.5, -3);
+    glTexCoord2f(0, 1);
+    glVertex3d(-2, -1.5, -3);
+    glEnd();
+
+
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+}
+
+
+void load_debris(Scene scene){
+    srand(time(0));    
+    for(int i=1; i<250; i++){
+        int random_number = rand() % 60 + -30;
+        int random_number2 = rand() % 60 + -30;
+        glPushMatrix();
+        glTranslatef(random_number,random_number2,-3.4);
+        draw_model(&(scene.Ball));
+        draw_model(&(scene.placs1));
+        draw_model(&(scene.placs2));
+        glPopMatrix();
+        glDisable(GL_BLEND);
+        glDisable(GL_COLOR_MATERIAL);
+        glEnable(GL_TEXTURE_2D);
+    }
+    
+}
+
+
 
 void update_scene(Scene* scene, double time)
 {
@@ -226,15 +304,17 @@ void render_scene(const Scene* scene)
     set_material(&(scene->material));
     set_lighting();
     draw_origin();
+    load_Star(*scene);
 	glBindTexture(GL_TEXTURE_2D, scene->Maze_texture);
     draw_model(&(scene->Maze));
 	glBindTexture(GL_TEXTURE_2D, scene->Cube_texture);
 	draw_model(&(scene->Cube));
 	glBindTexture(GL_TEXTURE_2D, scene->Star_texture);
-	load_Star(*scene);
-	load_ground(*scene);
+    load_lava(*scene);
 	glBindTexture(GL_TEXTURE_2D, scene->skybox_texture);
 	load_skybox(*scene);
+    load_debris(*scene);
+    load_ground2(*scene);
 }
 
 void draw_origin()

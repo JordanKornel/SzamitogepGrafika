@@ -6,12 +6,18 @@
 
 #include <obj/model.h>
 
+#include <SDL2/SDL_mixer.h>
+
 typedef struct Scene
 {
     Model Maze;
 	Model Cube;
 	Model Star;
 	Model ground;
+	Model Lava;
+	Model Ball;
+	Model placs1;
+	Model placs2;
     Material material;
 	GLuint ground_texture;
 	GLuint Maze_texture;
@@ -19,14 +25,25 @@ typedef struct Scene
 	GLuint Star_texture;
 	GLuint skybox_texture;
 	GLuint Help_menu;
+	GLuint lava_texture;
 	double angle;
 	bool Help_visible;
+	bool motion_up;
 } Scene;
+
+typedef struct Audio {
+    Mix_Music *Music;
+} Audio;
+
 
 /**
  * Initialize the scene by loading models.
  */
-void init_scene(Scene* scene);
+void init_scene(Scene* scene, Audio *audio);
+/**
+ * Initializes the Audio.
+ */
+void load_scene_sounds(Audio *audio);
 
 /**
  * Set the lighting of the scene.
