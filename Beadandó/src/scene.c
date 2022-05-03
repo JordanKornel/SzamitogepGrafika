@@ -56,6 +56,7 @@ void init_scene(Scene* scene, Audio *audio)
     scene->material.shininess = 1.0f;
 	
 	scene->angle = 0;
+    scene->debris = 0;
 	scene->Help_visible = false;
 
 }
@@ -281,6 +282,8 @@ void load_debris(Scene scene){
         int random_number2 = rand() % 60 + -30;
         glPushMatrix();
         glTranslatef(random_number,random_number2,-3.4);
+        glTranslated(fmod(scene.debris * 1, 1),fmod(scene.debris * 1, 1),0);
+        glRotatef(scene.debris*14,0,0,1);
         draw_model(&(scene.Ball));
         draw_model(&(scene.placs1));
         draw_model(&(scene.placs2));
@@ -297,6 +300,7 @@ void load_debris(Scene scene){
 void update_scene(Scene* scene, double time)
 {
 	scene->angle += 50 * time;
+    scene->debris += 0.8 * time;
 }
 
 void render_scene(const Scene* scene)

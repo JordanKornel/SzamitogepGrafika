@@ -27,6 +27,7 @@ typedef struct Scene
 	GLuint Help_menu;
 	GLuint lava_texture;
 	double angle;
+	double debris;
 	bool Help_visible;
 	bool motion_up;
 } Scene;
